@@ -12,15 +12,15 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/mdx": "^6.0.2",
-    "@astrojs/netlify": "^7.0.12",
+    "@astrojs/mdx": "^8.0.1",
+    "@astrojs/netlify": "^8.2.6",
     "@sanity/astro": "^3.4.0",
     "@sanity/client": "^7.22.1",
     "@sanity/image-url": "^2.1.1",
     "@tailwindcss/typography": "^0.5.19",
     "@tailwindcss/vite": "^4.2.1",
     "@types/canvas-confetti": "^1.9.0",
-    "astro": "^6.4.4",
+    "astro": "^7.3.3",
     "astro-portabletext": "^0.13.0",
     "canvas-confetti": "^1.9.4",
     "react": "^19.2.7",
