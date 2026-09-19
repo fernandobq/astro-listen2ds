@@ -1,0 +1,111 @@
+---
+import Layout from "../../layouts/main.astro";
+import GenreChips from "../../components/GenreChips.astro";
+import PortableBody from "../../components/PortableBody.astro";
+import SanityImage from "../../components/SanityImage.astro";
+import { sanityClient } from "sanity:client";
+import { ALBUM_QUERY, ALBUM_SLUGS_QUERY } from "../../lib/sanity/queries";
+import type { Album, StaticSlugPath } from "../../lib/sanity/types";
+
+export async function getStaticPaths() {
+  const albums =
+    (await sanityClient.fetch<StaticSlugPath[] | null>(ALBUM_SLUGS_QUERY)) ??
+    [];
+  return albums;
+}
+
+const { slug } = Astro.params;
+const album = await sanityClient.fetch<Album | null>(ALBUM_QUERY, { slug });
+
+if (!album) {
+  return new Response("Not found", { status: 404, statusText: "Not Found" });
+}
+
+const artistHref =
+  album.artist?.generatePage && album.artist.slug
+    ? `/artists/${album.artist.slug}`
+    : null;
+const tracks = album.tracklist ?? [];
+const released = album.releaseDate
+  ? new Date(album.releaseDate).toLocaleDateString()
+  : null;
+---
+
+<Layout title={album.title}>
+  <main class="container mx-auto min-h-screen max-w-3xl p-8 flex flex-col gap-4">
+    <SanityImage
+      image={album.coverImage}
+      alt={album.title}
+      width={550}
+      height={550}
+      class="aspect-square rounded-xl"
+    />
+    <h1 class="text-4xl font-bold">{album.title}</h1>
+    {
+      album.artist?.name &&
+        (artistHref ? (
+          <a href={artistHref} class="hover:underline">
+            {album.artist.name}
+          </a>
+        ) : (
+          <p>{album.artist.name}</p>
+        ))
+    }
+    {released && <p>Released: {released}</p>}
+    <GenreChips genres={album.genres} />
+    <PortableBody value={album.description} />
+    {
+      tracks.length > 0 && (
+        <section class="flex flex-col gap-4 mt-4">
+          <h2 class="text-2xl font-bold">Tracklist</h2>
+          <ol class="flex flex-col gap-y-6">
+            {tracks.map((song) => (
+              <li class="flex flex-col gap-2">
+                <p>
+                  {song.trackNumber != null && (
+                    <span>{song.trackNumber}. </span>
+                  )}
+                  {song.title}
+                  {song.duration && <span> · {song.duration}</span>}
+                </p>
+                <PortableBody value={song.review} />
+                <p class="flex flex-wrap gap-3">
+                  {song.links?.youtube && (
+                    <a
+                      href={song.links.youtube}
+                      class="underline"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      YouTube
+                    </a>
+                  )}
+                  {song.links?.spotify && (
+                    <a
+                      href={song.links.spotify}
+                      class="underline"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Spotify
+                    </a>
+                  )}
+                  {song.links?.appleMusic && (
+                    <a
+                      href={song.links.appleMusic}
+                      class="underline"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Apple Music
+                    </a>
+                  )}
+                </p>
+              </li>
+            ))}
+          </ol>
+        </section>
+      )
+    }
+  </main>
+</Layout>

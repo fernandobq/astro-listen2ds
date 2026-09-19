@@ -1,0 +1,26 @@
+---
+import { resolveCmsLink } from "../lib/sanity/links";
+import type { CmsLinkValue } from "../lib/sanity/types";
+
+interface Props {
+  link?: CmsLinkValue | null;
+  class?: string;
+}
+
+const { link, class: className } = Astro.props;
+const resolved = resolveCmsLink(link);
+---
+
+{
+  resolved && (
+    <a
+      href={resolved.href}
+      class={className}
+      {...(resolved.external
+        ? { target: "_blank", rel: "noopener noreferrer" }
+        : {})}
+    >
+      {resolved.label}
+    </a>
+  )
+}

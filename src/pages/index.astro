@@ -1,26 +1,19 @@
 ---
-import '../styles/global.css';
-// Component Imports
-import Button from '../components/Button.astro';
+import Layout from "../layouts/main.astro";
+import PageBuilder from "../components/page-builder/PageBuilder.astro";
+import { sanityClient } from "sanity:client";
+import { HOME_QUERY } from "../lib/sanity/queries";
+import type { Page } from "../lib/sanity/types";
 
-// Full Astro Component Syntax:
-// https://docs.astro.build/basics/astro-components/
+const home = await sanityClient.fetch<Page | null>(HOME_QUERY);
+
+if (!home) {
+  return new Response("Not found", { status: 404, statusText: "Not Found" });
+}
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro + TailwindCSS</title>
-	</head>
-
-	<body>
-		<div class="grid place-items-center h-screen content-center">
-			<Button>Tailwind Button in Astro!</Button>
-			<a href="/markdown-page" class="p-4 underline">Markdown is also supported...</a>
-		</div>
-	</body>
-</html>
+<Layout title={home.title}>
+  <main class="container mx-auto min-h-screen max-w-3xl p-8 flex flex-col gap-8">
+    <PageBuilder blocks={home.pageBuilder} />
+  </main>
+</Layout>

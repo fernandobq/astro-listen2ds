@@ -1,0 +1,14 @@
+---
+import PortableBody from "../PortableBody.astro";
+import type { RichTextBlock } from "../../lib/sanity/types";
+
+interface Props {
+  block: RichTextBlock;
+}
+
+const { block } = Astro.props;
+---
+
+<section>
+  <PortableBody value={block.content} />
+</section>

@@ -1,0 +1,18 @@
+---
+import { PortableText } from "astro-portabletext";
+import type { PortableTextValue } from "../lib/sanity/types";
+
+interface Props {
+  value?: PortableTextValue | null;
+}
+
+const { value } = Astro.props;
+---
+
+{
+  Array.isArray(value) && value.length > 0 && (
+    <div class="prose">
+      <PortableText value={value} />
+    </div>
+  )
+}

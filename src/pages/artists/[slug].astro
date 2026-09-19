@@ -1,0 +1,67 @@
+---
+import Layout from "../../layouts/main.astro";
+import AlbumCard from "../../components/AlbumCard.astro";
+import GenreChips from "../../components/GenreChips.astro";
+import PortableBody from "../../components/PortableBody.astro";
+import SanityImage from "../../components/SanityImage.astro";
+import { sanityClient } from "sanity:client";
+import { ARTIST_QUERY, ARTIST_SLUGS_QUERY } from "../../lib/sanity/queries";
+import type { Artist, StaticSlugPath } from "../../lib/sanity/types";
+
+export async function getStaticPaths() {
+  const artists =
+    (await sanityClient.fetch<StaticSlugPath[] | null>(ARTIST_SLUGS_QUERY)) ??
+    [];
+  return artists;
+}
+
+const { slug } = Astro.params;
+const artist = await sanityClient.fetch<Artist | null>(ARTIST_QUERY, { slug });
+
+if (!artist) {
+  return new Response("Not found", { status: 404, statusText: "Not Found" });
+}
+
+const albums = artist.albums ?? [];
+---
+
+<Layout title={artist.name}>
+  <main class="container mx-auto min-h-screen max-w-3xl p-8 flex flex-col gap-4">
+    <SanityImage
+      image={artist.image}
+      alt={artist.name}
+      width={550}
+      height={550}
+      class="aspect-square rounded-xl"
+    />
+    <h1 class="text-4xl font-bold">{artist.name}</h1>
+    <GenreChips genres={artist.genres} />
+    {
+      artist.website && (
+        <a
+          href={artist.website}
+          class="underline"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Website
+        </a>
+      )
+    }
+    <PortableBody value={artist.bio} />
+    {
+      albums.length > 0 && (
+        <section class="flex flex-col gap-4 mt-4">
+          <h2 class="text-2xl font-bold">Albums</h2>
+          <ul class="flex flex-col gap-y-4">
+            {albums.map((album) => (
+              <li>
+                <AlbumCard album={album} />
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+  </main>
+</Layout>

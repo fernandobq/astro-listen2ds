@@ -1,26 +1,25 @@
 ---
-import "../../styles/global.css";
-import type { SanityDocument } from "@sanity/client";
+import Layout from "../../layouts/main.astro";
+import PostCard from "../../components/PostCard.astro";
 import { sanityClient } from "sanity:client";
+import { POSTS_QUERY } from "../../lib/sanity/queries";
+import type { PostCardData } from "../../lib/sanity/types";
 
-const POSTS_QUERY = `*[
-  _type == "post"
-  && defined(slug.current)
-]|order(publishedAt desc)[0...12]{_id, title, slug, publishedAt}`;
-
-const posts = await sanityClient.fetch<SanityDocument[]>(POSTS_QUERY);
+const posts =
+  (await sanityClient.fetch<PostCardData[] | null>(POSTS_QUERY)) ?? [];
 ---
 
-<main class="container mx-auto min-h-screen max-w-3xl p-8">
-  <h1 class="text-4xl font-bold mb-8">Posts</h1>
-  <ul class="flex flex-col gap-y-4">
-    {posts.map((post) => (
-        <li class="hover:underline">
-          <a href={`/posts/${post.slug.current}`}>
-            <h2 class="text-xl font-semibold">{post.title}</h2>
-            <p>{new Date(post.publishedAt).toLocaleDateString()}</p>
-          </a>
-        </li>
-      ))}
-  </ul>
-</main>
+<Layout title="Posts">
+  <main class="container mx-auto min-h-screen max-w-3xl p-8">
+    <h1 class="text-4xl font-bold mb-8">Posts</h1>
+    <ul class="flex flex-col gap-y-4">
+      {
+        posts.map((post) => (
+          <li>
+            <PostCard post={post} />
+          </li>
+        ))
+      }
+    </ul>
+  </main>
+</Layout>
