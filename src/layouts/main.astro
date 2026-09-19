@@ -1,17 +1,44 @@
 ---
-import '../styles/global.css';
-const { content } = Astro.props;
+import "../styles/global.css";
+import { sanityClient } from "sanity:client";
+import CmsLink from "../components/CmsLink.astro";
+import { NAVBAR_QUERY } from "../lib/sanity/queries";
+import type { Navbar } from "../lib/sanity/types";
+
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+const navbar = await sanityClient.fetch<Navbar | null>(NAVBAR_QUERY);
+const items = navbar?.items ?? [];
 ---
 
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<title>{content.title}</title>
-	</head>
-	<body>
-		<slot />
-	</body>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+  </head>
+  <body>
+    {
+      items.length > 0 && (
+        <header class="container mx-auto max-w-3xl p-8 pb-0">
+          <nav>
+            <ul class="flex flex-wrap gap-4">
+              {items.map((item) => (
+                <li>
+                  <CmsLink link={item} class="hover:underline" />
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </header>
+      )
+    }
+    <slot />
+  </body>
 </html>

@@ -1,0 +1,38 @@
+---
+import SanityImage from "./SanityImage.astro";
+import type { ArtistCardData } from "../lib/sanity/types";
+
+interface Props {
+  artist: ArtistCardData;
+}
+
+const { artist } = Astro.props;
+const href =
+  artist.generatePage && artist.slug ? `/artists/${artist.slug}` : null;
+---
+
+{
+  href ? (
+    <a href={href} class="hover:underline flex flex-col gap-2">
+      <SanityImage
+        image={artist.image}
+        alt={artist.name}
+        width={400}
+        height={400}
+        class="aspect-square rounded-xl"
+      />
+      <h2 class="text-xl font-semibold">{artist.name}</h2>
+    </a>
+  ) : (
+    <div class="flex flex-col gap-2">
+      <SanityImage
+        image={artist.image}
+        alt={artist.name}
+        width={400}
+        height={400}
+        class="aspect-square rounded-xl"
+      />
+      <h2 class="text-xl font-semibold">{artist.name}</h2>
+    </div>
+  )
+}

@@ -1,0 +1,40 @@
+---
+import SanityImage from "./SanityImage.astro";
+import type { AlbumCardData } from "../lib/sanity/types";
+
+interface Props {
+  album: AlbumCardData;
+}
+
+const { album } = Astro.props;
+const href =
+  album.generatePage && album.slug ? `/albums/${album.slug}` : null;
+---
+
+{
+  href ? (
+    <a href={href} class="hover:underline flex flex-col gap-2">
+      <SanityImage
+        image={album.coverImage}
+        alt={album.title}
+        width={400}
+        height={400}
+        class="aspect-square rounded-xl"
+      />
+      <h2 class="text-xl font-semibold">{album.title}</h2>
+      {album.artist?.name && <p>{album.artist.name}</p>}
+    </a>
+  ) : (
+    <div class="flex flex-col gap-2">
+      <SanityImage
+        image={album.coverImage}
+        alt={album.title}
+        width={400}
+        height={400}
+        class="aspect-square rounded-xl"
+      />
+      <h2 class="text-xl font-semibold">{album.title}</h2>
+      {album.artist?.name && <p>{album.artist.name}</p>}
+    </div>
+  )
+}

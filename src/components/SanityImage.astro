@@ -1,0 +1,27 @@
+---
+import type { SanityImageSource } from "@sanity/image-url";
+import { imageUrl } from "../lib/sanity/image";
+
+interface Props {
+  image?: SanityImageSource | null;
+  alt: string;
+  width: number;
+  height?: number;
+  class?: string;
+}
+
+const { image, alt, width, height, class: className } = Astro.props;
+const src = imageUrl(image, width, height);
+---
+
+{
+  src && (
+    <img
+      src={src}
+      alt={alt}
+      width={width}
+      height={height}
+      class={className}
+    />
+  )
+}

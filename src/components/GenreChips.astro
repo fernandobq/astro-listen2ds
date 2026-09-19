@@ -1,0 +1,28 @@
+---
+import type { GenreRef } from "../lib/sanity/types";
+
+interface Props {
+  genres?: GenreRef[] | null;
+}
+
+const { genres } = Astro.props;
+const items = genres?.filter((genre) => genre?.name) ?? [];
+---
+
+{
+  items.length > 0 && (
+    <ul class="flex flex-wrap gap-2">
+      {items.map((genre) => (
+        <li>
+          {genre.generatePage && genre.slug ? (
+            <a href={`/genres/${genre.slug}`} class="hover:underline">
+              {genre.name}
+            </a>
+          ) : (
+            <span>{genre.name}</span>
+          )}
+        </li>
+      ))}
+    </ul>
+  )
+}

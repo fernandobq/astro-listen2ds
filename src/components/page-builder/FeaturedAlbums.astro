@@ -1,0 +1,26 @@
+---
+import AlbumCard from "../AlbumCard.astro";
+import type { FeaturedAlbumsBlock } from "../../lib/sanity/types";
+
+interface Props {
+  block: FeaturedAlbumsBlock;
+}
+
+const { block } = Astro.props;
+const albums = block.albums ?? [];
+---
+
+<section class="flex flex-col gap-4">
+  {block.heading && <h2 class="text-2xl font-bold">{block.heading}</h2>}
+  {
+    albums.length > 0 && (
+      <ul class="flex flex-col gap-y-4">
+        {albums.map((album) => (
+          <li>
+            <AlbumCard album={album} />
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</section>
