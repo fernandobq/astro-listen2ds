@@ -1,11 +1,11 @@
 # Agent context: astro-listen2ds
 
-Music blog frontend. Posts live in Sanity; this repo builds static HTML and deploys it to Netlify.
+Music blog frontend. Content lives in Sanity; this repo builds static HTML and deploys it to Netlify.
 
 ## Stack
 
 - Astro 7 + Tailwind 4
-- `@sanity/astro` + GROQ for post queries
+- `@sanity/astro` + GROQ (`src/lib/sanity/queries.ts`)
 - `@astrojs/netlify` adapter (static deploy, not SSR)
 - Node `>=22.12.0` (see `.nvmrc` for the local pin)
 
@@ -21,13 +21,25 @@ Astro default `output` is `static`. `astro.config.mjs` does **not** set `output:
 
 ### Content fetch
 
-- `src/pages/posts/index.astro` — GROQ in frontmatter; latest 12 posts baked into `/posts`.
-- `src/pages/posts/[slug].astro` — `getStaticPaths()` fetches every slug, then Astro emits one static page per slug. A new slug has no URL until the next build.
+Queries live in `src/lib/sanity/queries.ts` and are imported by pages (including inside `getStaticPaths`). Types are hand-written in `src/lib/sanity/types.ts` (no TypeGen).
+
+- `src/layouts/main.astro` — navbar singleton `_id == "navbar"` baked into every page
+- `src/pages/index.astro` — home `page` document `_id == "home"`; renders `pageBuilder`
+- `src/pages/[slug].astro` — other `page` documents; excludes home and reserved slugs (`posts`, `artists`, `albums`, `genres`)
+- `src/pages/posts/index.astro` — latest 12 posts with `publishedAt <= now()`
+- `src/pages/posts/[slug].astro` — published posts only
+- `src/pages/artists/[slug].astro` — artists with `generatePage == true`
+- `src/pages/albums/[slug].astro` — albums with `generatePage == true`
+- `src/pages/genres/[slug].astro` — genres with `generatePage == true`
+
+There are no `/songs/[slug]` routes and no artist/album/genre listing indexes. Artist/album cards link to a detail page only when `generatePage` is true.
+
+A new slug (or a newly enabled `generatePage` flag) has no URL until the next build.
 
 ### Dev vs production
 
 - `astro dev` fetches Sanity on each page load, so new entries appear locally without a rebuild.
-- Production serves the last build’s files. New posts (especially new slugs) stay invisible until redeploy.
+- Production serves the last build’s files. New documents (especially new slugs) stay invisible until redeploy.
 
 `netlify.toml` is empty: no Sanity → Netlify rebuild webhook.
 
@@ -37,18 +49,25 @@ Astro default `output` is `static`. `astro.config.mjs` does **not** set `output:
 |---|---|
 | projectId | `4fqkkmt0` |
 | dataset | `production` |
+| apiVersion | `2026-09-19` |
 
-IDs are hardcoded in `astro.config.mjs` (no `.env` yet). Studio/schemas are **not** in this repo.
+IDs and apiVersion are hardcoded in `astro.config.mjs` (no `.env` yet). Studio/schemas are **not** in this repo.
 
 ## Key files
 
 | Path | Role |
 |---|---|
 | `astro.config.mjs` | Tailwind, Sanity client, Netlify adapter |
-| `src/pages/posts/index.astro` | Post list |
-| `src/pages/posts/[slug].astro` | Post page + `getStaticPaths` |
-| `src/pages/index.astro` | Starter home (confetti button) |
-| `src/pages/markdown-page.md` | Starter markdown page |
+| `src/lib/sanity/queries.ts` | GROQ queries |
+| `src/lib/sanity/types.ts` | Hand-written CMS types |
+| `src/layouts/main.astro` | Site shell + navbar |
+| `src/components/page-builder/` | Home/extra-page blocks |
+| `src/pages/index.astro` | Sanity home |
+| `src/pages/[slug].astro` | Extra CMS pages |
+| `src/pages/posts/` | Post list + post pages |
+| `src/pages/artists/[slug].astro` | Artist pages (`generatePage`) |
+| `src/pages/albums/[slug].astro` | Album pages (`generatePage`) |
+| `src/pages/genres/[slug].astro` | Genre pages (`generatePage`) |
 | `netlify.toml` | Empty |
 
 ## Convention
