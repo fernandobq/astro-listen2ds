@@ -3,10 +3,9 @@ import Layout from "../../layouts/main.astro";
 import PostCard from "../../components/PostCard.astro";
 import { sanityClient } from "sanity:client";
 import { POSTS_QUERY } from "../../lib/sanity/queries";
-import type { PostCardData } from "../../lib/sanity/types";
+import type { PostsIndexData } from "../../lib/sanity/types";
 
-const posts =
-  (await sanityClient.fetch<PostCardData[] | null>(POSTS_QUERY)) ?? [];
+const { posts } = await sanityClient.fetch<PostsIndexData>(POSTS_QUERY);
 ---
 
 <Layout title="Posts">

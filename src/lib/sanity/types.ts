@@ -101,8 +101,23 @@ export type Page = {
   pageBuilder?: PageBuilderBlock[] | null;
 };
 
+export type PostSong = {
+  title: string;
+  duration?: string | null;
+  links?: SongLinks | null;
+  artist?: { name?: string | null; slug?: string | null; generatePage?: boolean | null } | null;
+  album?: { title?: string | null; slug?: string | null; generatePage?: boolean | null } | null;
+  genres?: GenreRef[] | null;
+};
+
 export type Post = PostCardData & {
   body?: PortableTextValue | null;
+  song?: PostSong | null;
+};
+
+export type PostsIndexData = {
+  posts: PostCardData[];
+  total: number;
 };
 
 export type Artist = ArtistCardData & {
