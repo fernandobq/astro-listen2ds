@@ -17,9 +17,9 @@ const isCurrent = (href: string) =>
   href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
 ---
 
-<nav class="flex flex-wrap items-baseline gap-x-6 gap-y-2">
-  <a href="/" class="py-2 text-[18px] font-medium text-bright no-underline"
-    >Listen2ds</a
+<nav class="flex flex-wrap items-center gap-x-6 gap-y-2">
+  <a href="/" class="py-3" 
+    ><img src="/listen2ds-lockup-glow.svg" alt="Listen2ds logo" class="h-5" /></a
   >
   {
     items.length > 0 && (
