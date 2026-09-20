@@ -1,0 +1,74 @@
+---
+import ListenLinks from "./ListenLinks.astro";
+
+interface Track {
+  _id: string;
+  title: string;
+  trackNumber?: number | null;
+  duration?: string | null;
+  hasReview: boolean;
+  links?: {
+    spotify?: string | null;
+    youtube?: string | null;
+    appleMusic?: string | null;
+  } | null;
+  noteHref?: string | null;
+}
+
+interface Props {
+  tracks: Track[];
+}
+
+const { tracks } = Astro.props;
+
+const rowClass =
+  "grid grid-cols-[28px_minmax(0,1fr)_auto] items-baseline gap-4 py-3";
+---
+
+<div class="flex flex-col border-t border-hairline">
+  {
+    tracks.map((track, index) =>
+      track.hasReview ? (
+        <details class="group border-b border-hairline open:bg-raised">
+          <summary
+            class:list={[
+              rowClass,
+              "-mx-3.5 cursor-pointer list-none px-3.5 transition-colors duration-[160ms] hover:bg-raised",
+            ]}
+          >
+            <span class="text-meta text-faint">
+              {track.trackNumber ?? index + 1}
+            </span>
+            <span class="text-glow">{track.title}</span>
+            <span class="text-meta tabular-nums text-dim">
+              {track.duration}
+            </span>
+          </summary>
+          <div class="flex flex-col gap-3 px-3.5 pb-5 pl-11">
+            <slot name={`review-${track._id}`} />
+            <ListenLinks links={track.links} label="" size="small" />
+            {track.noteHref && (
+              <div class="text-meta">
+                <a href={track.noteHref}>The note about this one</a>
+              </div>
+            )}
+          </div>
+        </details>
+      ) : (
+        <div class:list={[rowClass, "border-b border-hairline"]}>
+          <span class="text-meta text-faint">
+            {track.trackNumber ?? index + 1}
+          </span>
+          <span class="text-screen">{track.title}</span>
+          <span class="text-meta tabular-nums text-dim">{track.duration}</span>
+        </div>
+      ),
+    )
+  }
+</div>
+
+<style>
+  summary::-webkit-details-marker {
+    display: none;
+  }
+</style>
