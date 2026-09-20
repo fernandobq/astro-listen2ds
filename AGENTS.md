@@ -69,6 +69,24 @@ IDs and apiVersion are hardcoded in `astro.config.mjs` (no `.env` yet). Studio/s
 | `src/pages/albums/[slug].astro` | Album pages (`generatePage`) |
 | `src/pages/genres/[slug].astro` | Genre pages (`generatePage`) |
 | `netlify.toml` | Empty |
+| `src/components/ui/` | Presentational design-system components; no Sanity imports |
+| `docs/design-system.md` | Token and component reference |
+
+## Design system
+
+The site is built on the "Phone Glow" design system. Tokens live in
+`src/styles/global.css` (`@theme`); presentational components live in
+`src/components/ui/` and must not import Sanity.
+
+**Read `docs/design-system.md` before building a new page or component.**
+It carries the tokens, the component inventory (with real prop
+signatures and known traps), the voice rules, and the list of things the
+system refuses.
+
+Short version: dark single column, 600px measure, left aligned at every
+width. Two fonts — Fira Sans, and Newsreader Variable italic for lyrics
+only. No accent color, no radius, no shadow, no reveal-on-scroll.
+Sentence case everywhere.
 
 ## Convention
 
