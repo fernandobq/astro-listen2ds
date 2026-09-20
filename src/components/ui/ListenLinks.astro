@@ -29,7 +29,10 @@ const entries = [
         ]}
       >
         {entries.map((entry) => (
-          <a href={entry.href} class="py-2">
+          <a
+            href={entry.href}
+            class:list={[size === "small" ? "py-[11px]" : "py-2"]}
+          >
             {entry.name}
           </a>
         ))}

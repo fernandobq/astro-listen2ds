@@ -29,11 +29,11 @@ const rowClass =
   {
     tracks.map((track, index) =>
       track.hasReview ? (
-        <details class="group border-b border-hairline open:bg-raised">
+        <details class="border-b border-hairline transition-colors duration-[160ms] ease-out open:bg-raised">
           <summary
             class:list={[
               rowClass,
-              "-mx-3.5 cursor-pointer list-none px-3.5 transition-colors duration-[160ms] hover:bg-raised",
+              "-mx-3.5 cursor-pointer list-none px-3.5 transition-colors duration-[120ms] hover:bg-raised",
             ]}
           >
             <span class="text-meta text-faint">
