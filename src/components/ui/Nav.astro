@@ -1,0 +1,40 @@
+---
+interface NavItem {
+  label: string;
+  href: string;
+}
+
+interface Props {
+  items: NavItem[];
+  pathname: string;
+}
+
+const { items, pathname } = Astro.props;
+
+// "/posts/foo" should mark "/posts" as current; "/" only matches exactly.
+const isCurrent = (href: string) =>
+  href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
+---
+
+<nav class="flex flex-wrap items-baseline gap-x-6 gap-y-2">
+  <a
+    href="/"
+    class="py-2 text-[18px] font-medium text-bright no-underline hover:text-bright"
+    >Listen2ds</a
+  >
+  {
+    items.length > 0 && (
+      <div class="flex flex-wrap gap-x-5 text-meta">
+        {items.map((item) =>
+          isCurrent(item.href) ? (
+            <span class="py-2 text-screen">{item.label}</span>
+          ) : (
+            <a href={item.href} class="py-2 no-underline hover:underline">
+              {item.label}
+            </a>
+          ),
+        )}
+      </div>
+    )
+  }
+</nav>
