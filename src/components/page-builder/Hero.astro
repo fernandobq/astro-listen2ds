@@ -1,6 +1,5 @@
 ---
 import CmsLink from "../CmsLink.astro";
-import SanityImage from "../SanityImage.astro";
 import type { HeroBlock } from "../../lib/sanity/types";
 
 interface Props {
@@ -10,15 +9,8 @@ interface Props {
 const { block } = Astro.props;
 ---
 
-<section class="flex flex-col gap-4">
-  <SanityImage
-    image={block.image}
-    alt={block.heading}
-    width={768}
-    height={432}
-    class="aspect-video rounded-xl"
-  />
-  <h1 class="text-4xl font-bold">{block.heading}</h1>
-  {block.text && <p>{block.text}</p>}
-  <CmsLink link={block.button} class="underline" />
+<section class="flex flex-col gap-3.5">
+  <h1 class="max-w-[22ch] text-title text-glow">{block.heading}</h1>
+  {block.text && <p class="max-w-[56ch] text-body text-screen">{block.text}</p>}
+  {block.button && <div class="text-body"><CmsLink link={block.button} /></div>}
 </section>
