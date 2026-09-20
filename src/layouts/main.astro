@@ -2,6 +2,7 @@
 import "../styles/global.css";
 import { sanityClient } from "sanity:client";
 import Nav from "../components/ui/Nav.astro";
+import { resolveCmsLink } from "../lib/sanity/links";
 import { NAVBAR_QUERY } from "../lib/sanity/queries";
 import type { Navbar } from "../lib/sanity/types";
 
@@ -13,11 +14,8 @@ const { title } = Astro.props;
 const navbar = await sanityClient.fetch<Navbar | null>(NAVBAR_QUERY);
 
 const items = (navbar?.items ?? [])
-  .map((item) => {
-    const href = item.linkType === "url" ? item.url : item.path;
-    return item.label && href ? { label: item.label, href } : null;
-  })
-  .filter((item): item is { label: string; href: string } => item !== null);
+  .map((item) => resolveCmsLink(item))
+  .filter((item) => item !== null);
 ---
 
 <html lang="en">

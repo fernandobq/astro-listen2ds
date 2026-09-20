@@ -2,6 +2,7 @@
 interface NavItem {
   label: string;
   href: string;
+  external?: boolean;
 }
 
 interface Props {
@@ -17,9 +18,7 @@ const isCurrent = (href: string) =>
 ---
 
 <nav class="flex flex-wrap items-baseline gap-x-6 gap-y-2">
-  <a
-    href="/"
-    class="py-2 text-[18px] font-medium text-bright no-underline hover:text-bright"
+  <a href="/" class="py-2 text-[18px] font-medium text-bright no-underline"
     >Listen2ds</a
   >
   {
@@ -27,9 +26,15 @@ const isCurrent = (href: string) =>
       <div class="flex flex-wrap gap-x-5 text-meta">
         {items.map((item) =>
           isCurrent(item.href) ? (
-            <span class="py-2 text-screen">{item.label}</span>
+            <span class="py-3 text-screen">{item.label}</span>
           ) : (
-            <a href={item.href} class="py-2 no-underline hover:underline">
+            <a
+              href={item.href}
+              class="py-3 no-underline hover:underline"
+              {...(item.external
+                ? { target: "_blank", rel: "noopener noreferrer" }
+                : {})}
+            >
               {item.label}
             </a>
           ),
