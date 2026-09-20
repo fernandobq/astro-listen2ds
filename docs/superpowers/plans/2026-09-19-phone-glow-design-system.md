@@ -765,7 +765,7 @@ git commit -m "feat: add lyric, moment, listen links, chips"
 - Consumes: `Moment` from Task 5.
 - Produces:
   - `Prose` props: `{ class?: string }`, default slot.
-  - `MomentBlock` props: `{ node: { value: { timestamp?: string; lyric?: string; why?: string } } }` — the shape `astro-portabletext` passes to a custom block component.
+  - `MomentBlock` props: `{ node: { timestamp?: string | null; lyric?: string | null; why?: string | null } }` — `astro-portabletext` passes the RAW Portable Text block as `node`, flat and unwrapped (verified against `PortableText.astro`'s `asComponentProps`, which builds `{node, index, isInline}`). There is no `.value` key.
   - `PortableBody` props unchanged: `{ value?: PortableTextValue | null }`.
 
 - [ ] **Step 1: Create `src/components/ui/Prose.astro`**
@@ -795,26 +795,27 @@ const { class: className } = Astro.props;
 
 This is the bridge that makes the Moment first-class content rather than blog formatting. It renders nothing until the `moment` block type exists in the Studio (see Task 13's schema patch), which is why it is written defensively.
 
+`astro-portabletext` hands a custom `type` component the raw Portable Text block as `node` — flat, with no `.value` wrapper. A `moment` block arrives as `{_type: "moment", _key, timestamp, lyric, why}`. Reading `node.value` would be `undefined` forever, and `ui/Moment.astro`'s all-absent guard would silently render nothing.
+
 ```astro
 ---
 import Moment from "./ui/Moment.astro";
 
 interface Props {
   node: {
-    value?: {
-      timestamp?: string | null;
-      lyric?: string | null;
-      why?: string | null;
-    };
+    timestamp?: string | null;
+    lyric?: string | null;
+    why?: string | null;
   };
 }
 
 const { node } = Astro.props;
-const value = node.value ?? {};
 ---
 
-<Moment timestamp={value.timestamp} lyric={value.lyric} why={value.why} />
+<Moment timestamp={node.timestamp} lyric={node.lyric} why={node.why} />
 ```
+
+No extra null-guarding is needed here: `ui/Moment.astro` already renders nothing when all three fields are absent.
 
 - [ ] **Step 3: Rewrite `src/components/PortableBody.astro`**
 
