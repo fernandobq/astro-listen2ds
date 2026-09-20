@@ -13,13 +13,15 @@ interface Track {
     appleMusic?: string | null;
   } | null;
   noteHref?: string | null;
+  review?: unknown;
 }
 
 interface Props {
   tracks: Track[];
+  ReviewRenderer?: any;
 }
 
-const { tracks } = Astro.props;
+const { tracks, ReviewRenderer } = Astro.props;
 
 const rowClass =
   "grid grid-cols-[28px_minmax(0,1fr)_auto] items-baseline gap-4 py-3";
@@ -45,7 +47,9 @@ const rowClass =
             </span>
           </summary>
           <div class="flex flex-col gap-3 px-3.5 pb-5 pl-11">
-            <slot name={`review-${track._id}`} />
+            {ReviewRenderer && track.review ? (
+              <ReviewRenderer value={track.review} />
+            ) : null}
             <ListenLinks links={track.links} label="" size="small" />
             {track.noteHref && (
               <div class="text-meta">

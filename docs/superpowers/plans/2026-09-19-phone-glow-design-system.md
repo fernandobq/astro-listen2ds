@@ -887,7 +887,15 @@ git commit -m "feat: render portable text in the design system, add moment block
     }>;
   }
   ```
-  Named slot per track: `review-${_id}`, which receives the rendered Portable Text review.
+  plus `ReviewRenderer?` — a component the page passes in (the album page passes `PortableBody`), rendered
+  internally as `<ReviewRenderer value={track.review} />`, with `review` carried on each track.
+
+> **Do not use a per-track named slot for the review.** `<Fragment slot={`review-${track._id}`}>` inside a
+> `.map()` throws `ReferenceError: <var> is not defined` at render time — Astro hoists the slot-name
+> expression into a scope where the map callback variable does not exist. This was verified empirically:
+> it fails even when the slot's children are a static string, so it is the dynamic slot name itself, not
+> the children, that breaks. Passing a renderer component as a prop is the working pattern, and it keeps
+> `Tracklist` presentational (data plus a component, no Sanity imports).
 
 - [ ] **Step 1: Create `src/components/ui/Tracklist.astro`**
 
@@ -1722,6 +1730,7 @@ const tracks = (album.tracklist ?? []).map((track) => ({
   trackNumber: track.trackNumber,
   duration: track.duration,
   hasReview: Array.isArray(track.review) && track.review.length > 0,
+  review: track.review,
   links: track.links,
   noteHref: null,
 }));
@@ -1763,13 +1772,7 @@ const tracks = (album.tracklist ?? []).map((track) => ({
     {tracks.length > 0 && (
       <section class="flex flex-col gap-3.5">
         <SectionLabel>Tracks</SectionLabel>
-        <Tracklist tracks={tracks}>
-          {(album.tracklist ?? []).map((track) => (
-            <Fragment slot={`review-${track._id}`}>
-              <PortableBody value={track.review} />
-            </Fragment>
-          ))}
-        </Tracklist>
+        <Tracklist tracks={tracks} ReviewRenderer={PortableBody} />
       </section>
     )}
   </PageShell>

@@ -1,0 +1,31 @@
+---
+import Layout from "../../layouts/main.astro";
+import PageShell from "../../components/ui/PageShell.astro";
+import Stack from "../../components/ui/Stack.astro";
+import EmptyState from "../../components/ui/EmptyState.astro";
+import ArtistCard from "../../components/ArtistCard.astro";
+import { sanityClient } from "sanity:client";
+import { ARTISTS_QUERY } from "../../lib/sanity/queries";
+import type { ArtistCardData } from "../../lib/sanity/types";
+
+const artists = await sanityClient.fetch<ArtistCardData[]>(ARTISTS_QUERY);
+---
+
+<Layout title="Artists">
+  <PageShell class="gap-8 pb-24">
+    <h1 class="text-title-sm text-glow">Gente</h1>
+    {
+      artists.length > 0 ? (
+        <Stack>
+          {artists.map((artist) => (
+            <ArtistCard artist={artist} />
+          ))}
+        </Stack>
+      ) : (
+        <EmptyState line="No hay artistas acá todavía.">
+          Hay discos <a href="/albums">acá</a>.
+        </EmptyState>
+      )
+    }
+  </PageShell>
+</Layout>

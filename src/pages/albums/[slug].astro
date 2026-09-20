@@ -1,5 +1,9 @@
 ---
 import Layout from "../../layouts/main.astro";
+import PageShell from "../../components/ui/PageShell.astro";
+import Cover from "../../components/ui/Cover.astro";
+import SectionLabel from "../../components/ui/SectionLabel.astro";
+import Tracklist from "../../components/ui/Tracklist.astro";
 import GenreChips from "../../components/GenreChips.astro";
 import PortableBody from "../../components/PortableBody.astro";
 import SanityImage from "../../components/SanityImage.astro";
@@ -21,91 +25,56 @@ if (!album) {
   return new Response("Not found", { status: 404, statusText: "Not Found" });
 }
 
-const artistHref =
-  album.artist?.generatePage && album.artist.slug
-    ? `/artists/${album.artist.slug}`
-    : null;
-const tracks = album.tracklist ?? [];
-const released = album.releaseDate
-  ? new Date(album.releaseDate).toLocaleDateString()
-  : null;
+const tracks = (album.tracklist ?? []).map((track) => ({
+  _id: track._id,
+  title: track.title,
+  trackNumber: track.trackNumber,
+  duration: track.duration,
+  hasReview: Array.isArray(track.review) && track.review.length > 0,
+  links: track.links,
+  noteHref: null,
+  review: track.review,
+}));
 ---
 
 <Layout title={album.title}>
-  <main class="container mx-auto min-h-screen max-w-3xl p-8 flex flex-col gap-4">
-    <SanityImage
-      image={album.coverImage}
-      alt={album.title}
-      width={550}
-      height={550}
-      class="aspect-square rounded-xl"
-    />
-    <h1 class="text-4xl font-bold">{album.title}</h1>
-    {
-      album.artist?.name &&
-        (artistHref ? (
-          <a href={artistHref} class="hover:underline">
-            {album.artist.name}
-          </a>
-        ) : (
-          <p>{album.artist.name}</p>
-        ))
-    }
-    {released && <p>Released: {released}</p>}
-    <GenreChips genres={album.genres} />
+  <PageShell class="gap-8 pb-24">
+    <div class="flex flex-wrap items-start gap-[22px]">
+      {album.coverImage ? (
+        <Cover size={160}>
+          <SanityImage
+            image={album.coverImage}
+            alt={album.title}
+            width={320}
+            height={320}
+            class="h-full w-full object-cover"
+          />
+        </Cover>
+      ) : (
+        <Cover size={160} />
+      )}
+      <div class="flex min-w-[250px] flex-1 flex-col gap-2">
+        <h1 class="text-title-sm text-glow sm:text-title">{album.title}</h1>
+        {album.artist?.name && (
+          <div class="text-body text-screen">
+            {album.artist.generatePage && album.artist.slug ? (
+              <a href={`/artists/${album.artist.slug}`}>{album.artist.name}</a>
+            ) : (
+              album.artist.name
+            )}
+          </div>
+        )}
+        <GenreChips genres={album.genres} />
+      </div>
+    </div>
+
     <PortableBody value={album.description} />
-    {
-      tracks.length > 0 && (
-        <section class="flex flex-col gap-4 mt-4">
-          <h2 class="text-2xl font-bold">Tracklist</h2>
-          <ol class="flex flex-col gap-y-6">
-            {tracks.map((song) => (
-              <li class="flex flex-col gap-2">
-                <p>
-                  {song.trackNumber != null && (
-                    <span>{song.trackNumber}. </span>
-                  )}
-                  {song.title}
-                  {song.duration && <span> · {song.duration}</span>}
-                </p>
-                <PortableBody value={song.review} />
-                <p class="flex flex-wrap gap-3">
-                  {song.links?.youtube && (
-                    <a
-                      href={song.links.youtube}
-                      class="underline"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      YouTube
-                    </a>
-                  )}
-                  {song.links?.spotify && (
-                    <a
-                      href={song.links.spotify}
-                      class="underline"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Spotify
-                    </a>
-                  )}
-                  {song.links?.appleMusic && (
-                    <a
-                      href={song.links.appleMusic}
-                      class="underline"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Apple Music
-                    </a>
-                  )}
-                </p>
-              </li>
-            ))}
-          </ol>
-        </section>
-      )
-    }
-  </main>
+
+    {tracks.length > 0 && (
+      <section class="flex flex-col gap-3.5">
+        <SectionLabel>Tracks</SectionLabel>
+        <Tracklist tracks={tracks} ReviewRenderer={PortableBody} />
+      </section>
+    )}
+  </PageShell>
 </Layout>
