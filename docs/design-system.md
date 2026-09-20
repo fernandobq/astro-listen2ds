@@ -704,3 +704,45 @@ authoring path** — it is what gives tracks an explicit order (the
 fallback branch has no ordering signal of its own beyond
 `song.trackNumber`, which authors may not have set consistently). Treat
 the reverse-lookup branch as a safety net, not the primary path.
+
+## 8. Routes
+
+- `/[slug]` — CMS `page` documents (excludes `home` and the reserved
+  slugs `posts`, `artists`, `albums`, `genres`, `songs`).
+- `/posts` and `/posts/[slug]` — published posts.
+- `/artists` and `/artists/[slug]` — artists with `generatePage == true`.
+- `/albums` and `/albums/[slug]` — albums with `generatePage == true`.
+- `/genres/[slug]` — genres with `generatePage == true`.
+- `/songs/[slug]` — songs with a defined slug. See below: this route is
+  a deliberate deviation from the design file.
+
+### Deviation from the design file: `/songs/[slug]` exists
+
+The design file states "songs live here — no song URLs," and the
+original migration honored that. This branch adds `/songs/[slug]`
+anyway, **at the repo owner's explicit request** — this is a recorded
+deviation from the design file, not a design-fidelity choice made by
+whoever implemented it.
+
+Why: the Sanity schema already models a song as a unit of publication —
+`song.slug` existed but was dead (queried, never used to build a URL),
+and `song.review` (Portable Text) was reachable only by drilling into
+its album's expanded tracklist row. A song on an album that has no
+`generatePage` (or no album at all, hypothetically) had a review with
+no URL that could ever reach it. Songs needed their own page for the
+review to be reachable at all.
+
+**`song` has no `generatePage` field**, unlike `album`/`artist`/`genre`.
+`getStaticPaths` for `/songs/[slug]` therefore gates on
+`defined(slug.current)` alone — the slug is the opt-in, there is no
+second flag to also check. Adding a `generatePage` boolean to the
+`song` schema in the Studio repo would make it consistent with the
+other three content types; that hasn't been done as part of this
+change, so today every song with a slug gets a page.
+
+The album screen's tracklist links a plain (non-reviewed) row's title
+to `/songs/{slug}` when the song has a slug (`Tracklist`'s `noteHref`);
+a row that has a review keeps its `<details>` expand-in-place behavior
+untouched, plus its existing inner "The note about this one" link to
+the full song page — reading a review no longer requires generating an
+album page for the album that hosts it.

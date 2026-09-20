@@ -51,7 +51,7 @@ export const PAGE_QUERY = defineQuery(/* groq */ `
 `);
 
 export const PAGE_SLUGS_QUERY = defineQuery(/* groq */ `
-  *[_type == "page" && defined(slug.current) && _id != "home" && !(slug.current in ["posts", "artists", "albums", "genres"])]{
+  *[_type == "page" && defined(slug.current) && _id != "home" && !(slug.current in ["posts", "artists", "albums", "genres", "songs"])]{
     "params": { "slug": slug.current }
   }
 `);
@@ -174,6 +174,35 @@ export const ALBUMS_QUERY = defineQuery(/* groq */ `
       generatePage,
       artist->{ name }
     }
+`);
+
+export const SONG_QUERY = defineQuery(/* groq */ `
+  *[_type == "song" && slug.current == $slug][0]{
+    _id,
+    title,
+    "slug": slug.current,
+    trackNumber,
+    duration,
+    review,
+    links,
+    artist->{ _id, name, "slug": slug.current, image, generatePage },
+    album->{
+      _id,
+      title,
+      "slug": slug.current,
+      coverImage,
+      releaseDate,
+      generatePage,
+      artist->{ name }
+    },
+    genres[]->{ _id, name, "slug": slug.current, generatePage }
+  }
+`);
+
+export const SONG_SLUGS_QUERY = defineQuery(/* groq */ `
+  *[_type == "song" && defined(slug.current)]{
+    "params": { "slug": slug.current }
+  }
 `);
 
 export const ARTISTS_QUERY = defineQuery(/* groq */ `

@@ -31,8 +31,9 @@ Queries live in `src/lib/sanity/queries.ts` and are imported by pages (including
 - `src/pages/artists/[slug].astro` — artists with `generatePage == true`
 - `src/pages/albums/[slug].astro` — albums with `generatePage == true`
 - `src/pages/genres/[slug].astro` — genres with `generatePage == true`
+- `src/pages/songs/[slug].astro` — songs with a slug (no `generatePage` field on `song`; slug alone is the opt-in)
 
-There are no `/songs/[slug]` routes and no artist/album/genre listing indexes. Artist/album cards link to a detail page only when `generatePage` is true.
+`/albums` and `/artists` listing indexes exist (this branch added them). Artist/album cards link to a detail page only when `generatePage` is true.
 
 A new slug (or a newly enabled `generatePage` flag) has no URL until the next build.
 
@@ -68,6 +69,7 @@ IDs and apiVersion are hardcoded in `astro.config.mjs` (no `.env` yet). Studio/s
 | `src/pages/artists/[slug].astro` | Artist pages (`generatePage`) |
 | `src/pages/albums/[slug].astro` | Album pages (`generatePage`) |
 | `src/pages/genres/[slug].astro` | Genre pages (`generatePage`) |
+| `src/pages/songs/[slug].astro` | Song pages (slug-gated, no `generatePage`) |
 | `netlify.toml` | Empty |
 | `src/components/ui/` | Presentational design-system components; no Sanity imports |
 | `docs/design-system.md` | Token and component reference |

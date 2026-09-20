@@ -150,6 +150,19 @@ export type Album = AlbumCardData & {
   tracklist?: AlbumTrack[] | null;
 };
 
+export type Song = {
+  _id: string;
+  title: string;
+  slug: string | null;
+  trackNumber?: number | null;
+  duration?: string | null;
+  review?: PortableTextValue | null;
+  links?: SongLinks | null;
+  artist?: ArtistCardData | null;
+  album?: AlbumCardData | null;
+  genres?: GenreRef[] | null;
+};
+
 export type Genre = GenreRef & {
   description?: string | null;
   albums?: AlbumCardData[] | null;

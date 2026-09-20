@@ -63,7 +63,13 @@ const rowClass =
           <span class="text-meta text-faint">
             {track.trackNumber ?? index + 1}
           </span>
-          <span class="text-screen">{track.title}</span>
+          {track.noteHref ? (
+            <a href={track.noteHref} class="text-screen no-underline hover:underline">
+              {track.title}
+            </a>
+          ) : (
+            <span class="text-screen">{track.title}</span>
+          )}
           <span class="text-meta tabular-nums text-dim">{track.duration}</span>
         </div>
       ),

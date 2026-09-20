@@ -32,7 +32,7 @@ const tracks = (album.tracklist ?? []).map((track) => ({
   duration: track.duration,
   hasReview: Array.isArray(track.review) && track.review.length > 0,
   links: track.links,
-  noteHref: null,
+  noteHref: track.slug ? `/songs/${track.slug}` : null,
   review: track.review,
 }));
 ---
