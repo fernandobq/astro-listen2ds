@@ -9,11 +9,14 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "check": "astro check"
   },
   "dependencies": {
     "@astrojs/mdx": "^8.0.1",
     "@astrojs/netlify": "^8.2.6",
+    "@fontsource-variable/newsreader": "^5.3.0",
+    "@fontsource/fira-sans": "^5.3.0",
     "@sanity/astro": "^3.5.1",
     "@sanity/client": "^7.22.1",
     "@sanity/image-url": "^2.1.1",
@@ -28,5 +31,8 @@
     "sanity": "^5.30.0",
     "styled-components": "^6.4.2",
     "tailwindcss": "^4.2.1"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10"
   }
 }

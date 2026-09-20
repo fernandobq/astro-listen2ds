@@ -1,2 +1,110 @@
 @import "tailwindcss";
+
+/* Self-hosted fonts. The variable package registers the family as
+   'Newsreader Variable', not 'Newsreader'. */
+@import "@fontsource/fira-sans/300.css";
+@import "@fontsource/fira-sans/400.css";
+@import "@fontsource/fira-sans/500.css";
+@import "@fontsource-variable/newsreader/opsz-italic.css";
+
 @plugin "@tailwindcss/typography";
+
+@theme {
+  /* Color — six values plus support tones. There is no accent. */
+  --color-room: #13161d;
+  /* Defined because it is one of the system's six named colors, but no
+     screen uses it yet: rows sit directly on Room and share hairlines
+     rather than sitting on a raised surface. Reach for it only if a
+     future component genuinely needs a surface one step up. */
+  --color-note: #191e27;
+  --color-screen: #e6ebf3;
+  --color-dim: #98a2b1;
+  --color-glow: #f8fbff;
+  --color-link: #bfd2ec;
+  --color-link-hover: #eaf1fb;
+  --color-bright: #f3f7ff;
+  --color-hairline: #242a36;
+  --color-raised: #1d232e;
+  --color-rule: #39424f;
+  --color-faint: #6c7686;
+  /* Named -fallback because `bg-cover` is already a Tailwind
+     background-size utility. */
+  --color-cover-fallback: #1b2029;
+
+  /* Type — two families, no third. */
+  --font-sans: "Fira Sans", system-ui, sans-serif;
+  --font-lyric: "Newsreader Variable", Georgia, serif;
+
+  --text-title: 30px;
+  --text-title--line-height: 1.25;
+  --text-title--letter-spacing: -0.01em;
+
+  --text-title-sm: 26px;
+  --text-title-sm--line-height: 1.28;
+  --text-title-sm--letter-spacing: -0.01em;
+
+  --text-row: 20px;
+  --text-row--line-height: 1.3;
+
+  --text-body: 17px;
+  --text-body--line-height: 1.65;
+
+  --text-lyric: 21px;
+  --text-lyric--line-height: 1.5;
+
+  --text-lyric-sm: 20px;
+  --text-lyric-sm--line-height: 1.5;
+
+  --text-meta: 15px;
+  --text-meta--line-height: 1.5;
+
+  --text-caption: 14px;
+  --text-caption--line-height: 1.5;
+
+  /* The one measure. */
+  --container-measure: 600px;
+}
+
+@layer base {
+  html {
+    background-color: var(--color-room);
+  }
+
+  body {
+    background-color: var(--color-room);
+    color: var(--color-screen);
+    font-family: var(--font-sans);
+    font-weight: 300;
+    font-size: 17px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a {
+    color: var(--color-link);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+    text-decoration-color: color-mix(in srgb, var(--color-link) 45%, transparent);
+  }
+
+  a:hover {
+    color: var(--color-link-hover);
+    text-decoration-color: var(--color-link-hover);
+  }
+
+  ::selection {
+    background-color: #2b3444;
+    color: var(--color-bright);
+  }
+
+  /* The system allows exactly one load moment and nothing else. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      transition: none !important;
+      animation: none !important;
+    }
+  }
+}
