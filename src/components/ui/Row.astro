@@ -1,0 +1,45 @@
+---
+import type { HTMLTag } from "astro/types";
+
+interface Props {
+  variant: "post" | "album" | "artist";
+  href?: string | null;
+  title: string;
+  meta?: string | null;
+}
+
+const { variant, href, title, meta } = Astro.props;
+
+const Tag: HTMLTag = href ? "a" : "div";
+const hasCover = Astro.slots.has("cover");
+
+// The post variant puts its 16:9 image on the right; album and artist
+// put a 52px cover on the left.
+const isPost = variant === "post";
+---
+
+<Tag
+  href={href ?? undefined}
+  class:list={[
+    "-mx-3 border-b border-hairline px-3 no-underline transition-colors duration-[120ms]",
+    href && "hover:bg-raised",
+    isPost
+      ? "grid items-start gap-6 py-4"
+      : "flex items-center gap-[18px] py-3",
+    isPost && hasCover && "grid-cols-[minmax(0,1fr)_150px]",
+  ]}
+>
+  {!isPost && <slot name="cover" />}
+  <div class="flex min-w-0 flex-col gap-1.5">
+    <div
+      class:list={[
+        "text-bright",
+        isPost ? "text-row" : "leading-snug",
+      ]}
+    >
+      {title}
+    </div>
+    {meta && <div class="text-meta text-dim">{meta}</div>}
+  </div>
+  {isPost && hasCover && <slot name="cover" />}
+</Tag>
