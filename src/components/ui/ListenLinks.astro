@@ -1,0 +1,39 @@
+---
+interface Props {
+  links?: {
+    spotify?: string | null;
+    youtube?: string | null;
+    appleMusic?: string | null;
+  } | null;
+  label?: string;
+  size?: "default" | "small";
+}
+
+const { links, label = "Listen", size = "default" } = Astro.props;
+
+const entries = [
+  { name: "Spotify", href: links?.spotify },
+  { name: "YouTube", href: links?.youtube },
+  { name: "Apple Music", href: links?.appleMusic },
+].filter((entry): entry is { name: string; href: string } => Boolean(entry.href));
+---
+
+{
+  entries.length > 0 && (
+    <div class="flex flex-col gap-2">
+      {label && <div class="text-meta text-dim">{label}</div>}
+      <div
+        class:list={[
+          "flex flex-wrap gap-x-[18px] gap-y-2",
+          size === "small" ? "text-meta" : "text-body",
+        ]}
+      >
+        {entries.map((entry) => (
+          <a href={entry.href} class="py-2">
+            {entry.name}
+          </a>
+        ))}
+      </div>
+    </div>
+  )
+}

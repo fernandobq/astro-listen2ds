@@ -1,0 +1,16 @@
+---
+interface Props {
+  size?: "default" | "small";
+}
+
+const { size = "default" } = Astro.props;
+---
+
+<div
+  class:list={[
+    "font-lyric font-light italic text-glow",
+    size === "small" ? "text-lyric-sm" : "text-lyric",
+  ]}
+>
+  <slot />
+</div>
