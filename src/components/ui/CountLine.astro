@@ -1,0 +1,14 @@
+---
+interface Props {
+  shown: number;
+  total: number;
+  href?: string;
+  label?: string;
+}
+
+const { shown, total, href, label = "Older notes" } = Astro.props;
+---
+
+<div class="text-meta text-dim">
+  Showing {shown} of {total}{href && <> · <a href={href}>{label}</a></>}
+</div>
