@@ -41,6 +41,30 @@ with it.
 There is no accent token. Do not add one — brightness comes from text
 against a dim room, not from a color.
 
+#### Ruling: Glow can legitimately appear twice on one view
+
+`--color-glow`'s description says "the one brightest thing per view —
+page title, or the lyric, never both." Read literally as an element
+count, that would mean `Lyric.astro` (unconditionally `text-glow`)
+conflicts with a page's `<h1>` on any view that renders both — e.g. a
+post page's title plus a `Moment`'s lyric.
+
+That reading is wrong. The design's own Recommendation screen renders
+**both** the `<h1>` title and the Moment's lyric in `#F8FBFF` (Glow) on
+the same screen — the spec's own wording is "The lyric, the moment, a
+title. Brightest thing on the page," naming both in one breath. "One
+bold move per view" is an authoring guideline about not creating
+**competing** focal points on top of that pairing — not a mechanical
+one-glow-element-per-page rule. `Lyric.astro` stays exactly as it is;
+do not dim it to "resolve" an apparent conflict with a page title.
+
+What actually determines whether something gets Glow is whether the
+design draws it glowing, not how many other glowing things are already
+on the page. That's why `Prose`'s `h2` was moved off `text-glow` to
+`text-bright` and `Tracklist`'s collapsed track rows stay `text-screen`
+(glowing only `group-open`) — the design never draws a body heading or
+a collapsed row glowing at all, regardless of what else is on the page.
+
 ### Type
 
 Two families only:

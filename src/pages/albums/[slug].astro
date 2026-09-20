@@ -71,7 +71,7 @@ const tracks = (album.tracklist ?? []).map((track) => ({
     <PortableBody value={album.description} />
 
     {tracks.length > 0 && (
-      <section class="flex flex-col gap-3.5">
+      <section class="flex flex-col gap-4">
         <SectionLabel>Tracks</SectionLabel>
         <Tracklist tracks={tracks} ReviewRenderer={PortableBody} />
       </section>

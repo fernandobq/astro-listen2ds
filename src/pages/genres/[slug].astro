@@ -29,12 +29,12 @@ if (!genre) {
     <div class="flex flex-col gap-3">
       <h1 class="text-title-sm text-glow sm:text-title">{genre.name}</h1>
       {genre.description && (
-        <p class="max-w-[62ch] text-body text-screen">{genre.description}</p>
+        <p class="max-w-[66ch] text-body text-screen">{genre.description}</p>
       )}
     </div>
 
     {genre.albums && genre.albums.length > 0 && (
-      <section class="flex flex-col gap-3.5">
+      <section class="flex flex-col gap-4">
         <SectionLabel>Discos</SectionLabel>
         <Stack>
           {genre.albums.map((album) => <AlbumCard album={album} />)}
@@ -43,7 +43,7 @@ if (!genre) {
     )}
 
     {genre.artists && genre.artists.length > 0 && (
-      <section class="flex flex-col gap-3.5">
+      <section class="flex flex-col gap-4">
         <SectionLabel>Gente</SectionLabel>
         <Stack>
           {genre.artists.map((artist) => <ArtistCard artist={artist} />)}
