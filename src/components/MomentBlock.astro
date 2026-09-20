@@ -1,0 +1,18 @@
+---
+import Moment from "./ui/Moment.astro";
+
+interface Props {
+  node: {
+    value?: {
+      timestamp?: string | null;
+      lyric?: string | null;
+      why?: string | null;
+    };
+  };
+}
+
+const { node } = Astro.props;
+const value = node.value ?? {};
+---
+
+<Moment timestamp={value.timestamp} lyric={value.lyric} why={value.why} />

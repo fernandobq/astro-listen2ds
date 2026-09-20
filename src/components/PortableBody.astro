@@ -1,5 +1,7 @@
 ---
 import { PortableText } from "astro-portabletext";
+import Prose from "./ui/Prose.astro";
+import MomentBlock from "./MomentBlock.astro";
 import type { PortableTextValue } from "../lib/sanity/types";
 
 interface Props {
@@ -7,12 +9,18 @@ interface Props {
 }
 
 const { value } = Astro.props;
+
+const components = {
+  type: {
+    moment: MomentBlock,
+  },
+};
 ---
 
 {
   Array.isArray(value) && value.length > 0 && (
-    <div class="prose">
-      <PortableText value={value} />
-    </div>
+    <Prose>
+      <PortableText value={value} components={components} />
+    </Prose>
   )
 }
