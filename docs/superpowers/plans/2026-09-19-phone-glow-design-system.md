@@ -917,13 +917,15 @@ interface Track {
     appleMusic?: string | null;
   } | null;
   noteHref?: string | null;
+  review?: unknown;
 }
 
 interface Props {
   tracks: Track[];
+  ReviewRenderer?: any;
 }
 
-const { tracks } = Astro.props;
+const { tracks, ReviewRenderer } = Astro.props;
 
 const rowClass =
   "grid grid-cols-[28px_minmax(0,1fr)_auto] items-baseline gap-4 py-3";
@@ -933,11 +935,11 @@ const rowClass =
   {
     tracks.map((track, index) =>
       track.hasReview ? (
-        <details class="group border-b border-hairline open:bg-raised">
+        <details class="border-b border-hairline transition-colors duration-[160ms] ease-out open:bg-raised">
           <summary
             class:list={[
               rowClass,
-              "-mx-3.5 cursor-pointer list-none px-3.5 transition-colors duration-[160ms] hover:bg-raised",
+              "-mx-3.5 cursor-pointer list-none px-3.5 transition-colors duration-[120ms] hover:bg-raised",
             ]}
           >
             <span class="text-meta text-faint">
@@ -949,7 +951,9 @@ const rowClass =
             </span>
           </summary>
           <div class="flex flex-col gap-3 px-3.5 pb-5 pl-11">
-            <slot name={`review-${track._id}`} />
+            {ReviewRenderer && track.review ? (
+              <ReviewRenderer value={track.review} />
+            ) : null}
             <ListenLinks links={track.links} label="" size="small" />
             {track.noteHref && (
               <div class="text-meta">
