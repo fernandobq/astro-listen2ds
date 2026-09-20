@@ -1,4 +1,6 @@
 ---
+import Row from "./ui/Row.astro";
+import Cover from "./ui/Cover.astro";
 import SanityImage from "./SanityImage.astro";
 import type { AlbumCardData } from "../lib/sanity/types";
 
@@ -7,34 +9,28 @@ interface Props {
 }
 
 const { album } = Astro.props;
-const href =
-  album.generatePage && album.slug ? `/albums/${album.slug}` : null;
+const href = album.generatePage && album.slug ? `/albums/${album.slug}` : null;
 ---
 
-{
-  href ? (
-    <a href={href} class="hover:underline flex flex-col gap-2">
-      <SanityImage
-        image={album.coverImage}
-        alt={album.title}
-        width={400}
-        height={400}
-        class="aspect-square rounded-xl"
-      />
-      <h2 class="text-xl font-semibold">{album.title}</h2>
-      {album.artist?.name && <p>{album.artist.name}</p>}
-    </a>
-  ) : (
-    <div class="flex flex-col gap-2">
-      <SanityImage
-        image={album.coverImage}
-        alt={album.title}
-        width={400}
-        height={400}
-        class="aspect-square rounded-xl"
-      />
-      <h2 class="text-xl font-semibold">{album.title}</h2>
-      {album.artist?.name && <p>{album.artist.name}</p>}
-    </div>
-  )
-}
+<Row
+  variant="album"
+  href={href}
+  title={album.title}
+  meta={album.artist?.name ?? null}
+>
+  {
+    album.coverImage ? (
+      <Cover slot="cover" size={52}>
+        <SanityImage
+          image={album.coverImage}
+          alt={album.title}
+          width={104}
+          height={104}
+          class="h-full w-full object-cover"
+        />
+      </Cover>
+    ) : (
+      <Cover slot="cover" size={52} />
+    )
+  }
+</Row>

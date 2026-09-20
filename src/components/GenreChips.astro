@@ -1,4 +1,5 @@
 ---
+import Chips from "./ui/Chips.astro";
 import type { GenreRef } from "../lib/sanity/types";
 
 interface Props {
@@ -6,23 +7,13 @@ interface Props {
 }
 
 const { genres } = Astro.props;
-const items = genres?.filter((genre) => genre?.name) ?? [];
+
+const items = (genres ?? [])
+  .filter((genre) => genre?.name)
+  .map((genre) => ({
+    name: genre.name,
+    href: genre.generatePage && genre.slug ? `/genres/${genre.slug}` : null,
+  }));
 ---
 
-{
-  items.length > 0 && (
-    <ul class="flex flex-wrap gap-2">
-      {items.map((genre) => (
-        <li>
-          {genre.generatePage && genre.slug ? (
-            <a href={`/genres/${genre.slug}`} class="hover:underline">
-              {genre.name}
-            </a>
-          ) : (
-            <span>{genre.name}</span>
-          )}
-        </li>
-      ))}
-    </ul>
-  )
-}
+<Chips items={items} />
