@@ -56,16 +56,27 @@ registers the family under that suffixed name. Reference `'Newsreader'`
 and the browser silently falls back to Georgia — no error, just a
 slightly-off serif that's easy to miss in review.
 
-| Scale token | Utility | Size / line-height | Use |
-|---|---|---|---|
-| `--text-title` | `text-title` | 30px / 1.25, `-0.01em` | Page title (desktop / ≥ sm). |
-| `--text-title-sm` | `text-title-sm` | 26px / 1.28, `-0.01em` | Page title on mobile. |
-| `--text-row` | `text-row` | 20px / 1.3 | Post row title. |
-| `--text-body` | `text-body` | 17px / 1.65 | Body copy, same size on mobile. |
-| `--text-lyric` | `text-lyric` | 21px / 1.5 | Lyric, standalone or in a Moment. |
-| `--text-lyric-sm` | `text-lyric-sm` | 20px / 1.5 | Lyric on mobile. |
-| `--text-meta` | `text-meta` | 15px / 1.5 | Dates, durations, dim secondary lines. |
-| `--text-caption` | `text-caption` | 14px / 1.5 | Cover placeholder label, captions. |
+| Scale token | Utility | Size / line-height | Weight | Use |
+|---|---|---|---|---|
+| `--text-title` | `text-title` | 30px / 1.25, `-0.01em` | 500 | Page title (desktop / ≥ sm). |
+| `--text-title-sm` | `text-title-sm` | 26px / 1.28, `-0.01em` | 500 | Page title on mobile. |
+| `--text-row` | `text-row` | 20px / 1.3 | 400 | Post row title. |
+| `--text-body` | `text-body` | 17px / 1.65 | 300 | Body copy, same size on mobile. |
+| `--text-lyric` | `text-lyric` | 21px / 1.5 | 300 | Lyric, standalone or in a Moment. |
+| `--text-lyric-sm` | `text-lyric-sm` | 20px / 1.5 | 300 | Lyric on mobile. |
+| `--text-meta` | `text-meta` | 15px / 1.5 | 400 | Dates, durations, dim secondary lines. |
+| `--text-caption` | `text-caption` | 14px / 1.5 | (none — matches the inherited body weight) | Cover placeholder label, captions. |
+
+Weight is carried by each scale token itself, as a Tailwind 4
+`--text-*--font-weight` modifier alongside the token's size/line-height
+(e.g. `--text-title--font-weight: 500`) — not by a `font-medium`/
+`font-light` utility at each call site. This means any component that
+reaches for `text-title`, `text-row`, `text-meta`, etc. gets the correct
+weight automatically, with nothing extra to remember. `Nav.astro`'s
+`font-medium` (the wordmark) and `Lyric.astro`'s `font-light` are the
+two exceptions — both already resolve to a weight that matches this
+table and are left alone rather than migrated, to avoid unnecessary
+churn on components outside this fix's scope.
 
 The one measure: `--container-measure` → `max-w-measure` (600px).
 
@@ -86,8 +97,13 @@ Vertical rhythm is always a multiple of 8px, expressed as Tailwind `gap-*`:
 | 64 | `gap-16` |
 | 96 | `gap-24` |
 
-Page margin is 28px on phones, 40px above 700px (`PageShell`'s
-`px-7 sm:px-10`).
+Page margin is 28px on phones, 40px above **640px** (`PageShell`'s
+`px-7 sm:px-10` — Tailwind's `sm:` breakpoint is 640px, not 700px). The
+design spec asked for the switch at 700px; `sm:` was used deliberately
+as the closest built-in breakpoint rather than adding a custom one for a
+60px difference. If you're checking the margin at a viewport between
+640px and 700px, the desktop margin is expected there — that's this
+approximation, not a bug.
 
 ## 3. Component inventory
 
@@ -359,8 +375,20 @@ without a review renders as a plain (non-expandable) grid row. No
 JavaScript — `<details>` gives keyboard/screen-reader behavior for free,
 and the system forbids chevrons anyway, so the default marker is simply
 hidden (`summary::-webkit-details-marker { display: none }`). Expanded
-row takes `bg-raised`; transition is height/background only, 160ms
-ease-out.
+row takes `bg-raised`.
+
+**Correction to the design spec's wording:** the spec describes the
+expand as animating "height and background ... 160ms ease-out", but CSS
+cannot animate `height: auto` without a `max-height` or CSS Grid
+`grid-template-rows` hack — and the design's own "no animation beyond
+this" stance doesn't justify adding one just for this transition. What
+actually ships is `<details>` carrying `transition-colors
+duration-[160ms] ease-out`: the background fades in over 160ms and the
+box's height changes **instantly** (the browser's native `<details>`
+open/close behavior). This was decided explicitly early in the
+migration — don't "restore" a height animation here. Note this 160ms is
+distinct from `summary`'s own 120ms hover transition (the row-hover
+timing, same as `Row`).
 
 **TRAP — the single most expensive thing found in this migration:**
 Astro does **not** support a dynamically-named slot inside a `.map()`.
