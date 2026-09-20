@@ -1,24 +1,43 @@
 ---
 import Layout from "../../layouts/main.astro";
+import PageShell from "../../components/ui/PageShell.astro";
+import Stack from "../../components/ui/Stack.astro";
+import CountLine from "../../components/ui/CountLine.astro";
+import EmptyState from "../../components/ui/EmptyState.astro";
 import PostCard from "../../components/PostCard.astro";
 import { sanityClient } from "sanity:client";
 import { POSTS_QUERY } from "../../lib/sanity/queries";
 import type { PostsIndexData } from "../../lib/sanity/types";
 
-const { posts } = await sanityClient.fetch<PostsIndexData>(POSTS_QUERY);
+const { posts, total } = await sanityClient.fetch<PostsIndexData>(POSTS_QUERY);
 ---
 
-<Layout title="Posts">
-  <main class="container mx-auto min-h-screen max-w-3xl p-8">
-    <h1 class="text-4xl font-bold mb-8">Posts</h1>
-    <ul class="flex flex-col gap-y-4">
-      {
-        posts.map((post) => (
-          <li>
-            <PostCard post={post} />
-          </li>
-        ))
-      }
-    </ul>
-  </main>
+<Layout title="Notes">
+  <PageShell class="gap-8 pb-24">
+    <div class="flex flex-col gap-2">
+      <h1 class="text-title-sm text-glow">Notes</h1>
+      {posts.length > 0 && (
+        <div class="text-meta text-dim">Lo último. Twelve at a time.</div>
+      )}
+    </div>
+
+    {
+      posts.length > 0 ? (
+        <>
+          <Stack>
+            {posts.map((post) => (
+              <PostCard post={post} />
+            ))}
+          </Stack>
+          {total > posts.length && (
+            <CountLine shown={posts.length} total={total} />
+          )}
+        </>
+      ) : (
+        <EmptyState line="No hay notas todavía.">
+          Estoy escuchando algo ahora mismo. Meanwhile there are <a href="/albums">some albums</a> in here with tracklists already written.
+        </EmptyState>
+      )
+    }
+  </PageShell>
 </Layout>
