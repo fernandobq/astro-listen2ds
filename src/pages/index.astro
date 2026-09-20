@@ -1,5 +1,6 @@
 ---
 import Layout from "../layouts/main.astro";
+import PageShell from "../components/ui/PageShell.astro";
 import PageBuilder from "../components/page-builder/PageBuilder.astro";
 import { sanityClient } from "sanity:client";
 import { HOME_QUERY } from "../lib/sanity/queries";
@@ -13,7 +14,7 @@ if (!home) {
 ---
 
 <Layout title={home.title}>
-  <main class="container mx-auto min-h-screen max-w-3xl p-8 flex flex-col gap-8">
+  <PageShell class="gap-16 pb-24">
     <PageBuilder blocks={home.pageBuilder} />
-  </main>
+  </PageShell>
 </Layout>

@@ -1,0 +1,22 @@
+---
+import Lyric from "./Lyric.astro";
+
+interface Props {
+  timestamp?: string | null;
+  lyric?: string | null;
+  why?: string | null;
+}
+
+const { timestamp, lyric, why } = Astro.props;
+const isEmpty = !timestamp && !lyric && !why;
+---
+
+{
+  !isEmpty && (
+    <div class="flex flex-col gap-2.5 border-l border-rule pl-5">
+      {timestamp && <div class="text-meta text-dim">{timestamp}</div>}
+      {lyric && <Lyric>{lyric}</Lyric>}
+      {why && <div class="max-w-[56ch] text-meta text-dim">{why}</div>}
+    </div>
+  )
+}

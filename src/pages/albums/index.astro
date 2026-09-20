@@ -1,0 +1,32 @@
+---
+import Layout from "../../layouts/main.astro";
+import PageShell from "../../components/ui/PageShell.astro";
+import Stack from "../../components/ui/Stack.astro";
+import EmptyState from "../../components/ui/EmptyState.astro";
+import AlbumCard from "../../components/AlbumCard.astro";
+import { sanityClient } from "sanity:client";
+import { ALBUMS_QUERY } from "../../lib/sanity/queries";
+import type { AlbumCardData } from "../../lib/sanity/types";
+
+const albums = await sanityClient.fetch<AlbumCardData[]>(ALBUMS_QUERY);
+---
+
+<Layout title="Albums">
+  <PageShell class="gap-8 pb-24">
+    <h1 class="text-title-sm text-glow">Discos</h1>
+    {
+      albums.length > 0 ? (
+        <Stack>
+          {albums.map((album) => (
+            <AlbumCard album={album} />
+          ))}
+        </Stack>
+      ) : (
+        <EmptyState line="Todavía no hay discos acá.">
+          Put something on and come back — <a href="/posts">the notes</a> are
+          still here.
+        </EmptyState>
+      )
+    }
+  </PageShell>
+</Layout>

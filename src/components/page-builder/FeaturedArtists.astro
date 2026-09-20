@@ -1,4 +1,6 @@
 ---
+import SectionLabel from "../ui/SectionLabel.astro";
+import Stack from "../ui/Stack.astro";
 import ArtistCard from "../ArtistCard.astro";
 import type { FeaturedArtistsBlock } from "../../lib/sanity/types";
 
@@ -10,17 +12,15 @@ const { block } = Astro.props;
 const artists = block.artists ?? [];
 ---
 
-<section class="flex flex-col gap-4">
-  {block.heading && <h2 class="text-2xl font-bold">{block.heading}</h2>}
-  {
-    artists.length > 0 && (
-      <ul class="flex flex-col gap-y-4">
+{
+  artists.length > 0 && (
+    <section class="flex flex-col gap-4">
+      <SectionLabel>{block.heading ?? "Gente"}</SectionLabel>
+      <Stack>
         {artists.map((artist) => (
-          <li>
-            <ArtistCard artist={artist} />
-          </li>
+          <ArtistCard artist={artist} />
         ))}
-      </ul>
-    )
-  }
-</section>
+      </Stack>
+    </section>
+  )
+}

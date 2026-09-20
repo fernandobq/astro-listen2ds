@@ -1,4 +1,6 @@
 ---
+import Row from "./ui/Row.astro";
+import Cover from "./ui/Cover.astro";
 import SanityImage from "./SanityImage.astro";
 import type { ArtistCardData } from "../lib/sanity/types";
 
@@ -11,28 +13,20 @@ const href =
   artist.generatePage && artist.slug ? `/artists/${artist.slug}` : null;
 ---
 
-{
-  href ? (
-    <a href={href} class="hover:underline flex flex-col gap-2">
-      <SanityImage
-        image={artist.image}
-        alt={artist.name}
-        width={400}
-        height={400}
-        class="aspect-square rounded-xl"
-      />
-      <h2 class="text-xl font-semibold">{artist.name}</h2>
-    </a>
-  ) : (
-    <div class="flex flex-col gap-2">
-      <SanityImage
-        image={artist.image}
-        alt={artist.name}
-        width={400}
-        height={400}
-        class="aspect-square rounded-xl"
-      />
-      <h2 class="text-xl font-semibold">{artist.name}</h2>
-    </div>
-  )
-}
+<Row variant="artist" href={href} title={artist.name}>
+  {
+    artist.image ? (
+      <Cover slot="cover" shape="circle" size={52}>
+        <SanityImage
+          image={artist.image}
+          alt={artist.name}
+          width={104}
+          height={104}
+          class="h-full w-full object-cover"
+        />
+      </Cover>
+    ) : (
+      <Cover slot="cover" shape="circle" size={52} />
+    )
+  }
+</Row>

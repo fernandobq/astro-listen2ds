@@ -1,0 +1,28 @@
+---
+interface Props {
+  items: Array<{ name: string; href?: string | null }>;
+}
+
+const { items } = Astro.props;
+---
+
+{
+  items.length > 0 && (
+    <div class="flex flex-wrap items-center gap-x-[18px] gap-y-2 text-meta text-dim">
+      {items.map((item) =>
+        item.href ? (
+          <a
+            href={item.href}
+            class="border-b border-hairline pb-0.5 text-dim no-underline hover:text-screen"
+          >
+            {item.name.toLowerCase()}
+          </a>
+        ) : (
+          <span class="border-b border-hairline pb-0.5">
+            {item.name.toLowerCase()}
+          </span>
+        ),
+      )}
+    </div>
+  )
+}

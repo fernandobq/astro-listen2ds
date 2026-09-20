@@ -1,4 +1,5 @@
 ---
+import Row from "./ui/Row.astro";
 import SanityImage from "./SanityImage.astro";
 import type { PostCardData } from "../lib/sanity/types";
 
@@ -9,34 +10,29 @@ interface Props {
 const { post } = Astro.props;
 const href = post.slug ? `/posts/${post.slug}` : null;
 const published = post.publishedAt
-  ? new Date(post.publishedAt).toLocaleDateString()
+  ? new Date(post.publishedAt).toLocaleDateString("es", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    })
   : null;
 ---
 
-{
-  href ? (
-    <a href={href} class="hover:underline flex flex-col gap-2">
-      <SanityImage
-        image={post.image}
-        alt={post.title}
-        width={550}
-        height={310}
-        class="aspect-video rounded-xl"
-      />
-      <h2 class="text-xl font-semibold">{post.title}</h2>
-      {published && <p>{published}</p>}
-    </a>
-  ) : (
-    <div class="flex flex-col gap-2">
-      <SanityImage
-        image={post.image}
-        alt={post.title}
-        width={550}
-        height={310}
-        class="aspect-video rounded-xl"
-      />
-      <h2 class="text-xl font-semibold">{post.title}</h2>
-      {published && <p>{published}</p>}
-    </div>
-  )
-}
+<Row variant="post" href={href} title={post.title} meta={published}>
+  <div
+    slot={post.image ? "cover" : undefined}
+    class="aspect-video w-full border border-hairline"
+  >
+    {
+      post.image && (
+        <SanityImage
+          image={post.image}
+          alt={post.title}
+          width={300}
+          height={169}
+          class="h-full w-full object-cover"
+        />
+      )
+    }
+  </div>
+</Row>

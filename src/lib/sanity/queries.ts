@@ -51,20 +51,23 @@ export const PAGE_QUERY = defineQuery(/* groq */ `
 `);
 
 export const PAGE_SLUGS_QUERY = defineQuery(/* groq */ `
-  *[_type == "page" && defined(slug.current) && _id != "home" && !(slug.current in ["posts", "artists", "albums", "genres"])]{
+  *[_type == "page" && defined(slug.current) && _id != "home" && !(slug.current in ["posts", "artists", "albums", "genres", "songs"])]{
     "params": { "slug": slug.current }
   }
 `);
 
 export const POSTS_QUERY = defineQuery(/* groq */ `
-  *[_type == "post" && defined(slug.current) && publishedAt <= now()]
-    | order(publishedAt desc)[0...12]{
-      _id,
-      title,
-      "slug": slug.current,
-      publishedAt,
-      image
-    }
+  {
+    "posts": *[_type == "post" && defined(slug.current) && publishedAt <= now()]
+      | order(publishedAt desc)[0...12]{
+        _id,
+        title,
+        "slug": slug.current,
+        publishedAt,
+        image
+      },
+    "total": count(*[_type == "post" && defined(slug.current) && publishedAt <= now()])
+  }
 `);
 
 export const POST_QUERY = defineQuery(/* groq */ `
@@ -74,7 +77,15 @@ export const POST_QUERY = defineQuery(/* groq */ `
     "slug": slug.current,
     publishedAt,
     image,
-    body
+    body,
+    song->{
+      title,
+      duration,
+      links,
+      artist->{ name, "slug": slug.current, generatePage },
+      album->{ title, "slug": slug.current, generatePage },
+      genres[]->{ _id, name, "slug": slug.current, generatePage }
+    }
   }
 `);
 
@@ -117,15 +128,10 @@ export const ALBUM_QUERY = defineQuery(/* groq */ `
     generatePage,
     artist->{ _id, name, "slug": slug.current, image, generatePage },
     genres[]->{ _id, name, "slug": slug.current, generatePage },
-    tracklist[]->{
-      _id,
-      title,
-      "slug": slug.current,
-      trackNumber,
-      duration,
-      review,
-      links
-    }
+    "tracklist": coalesce(
+      tracklist[]->{ _id, title, "slug": slug.current, trackNumber, duration, review, links },
+      *[_type == "song" && album._ref == ^._id]{ _id, title, "slug": slug.current, trackNumber, duration, review, links }
+    ) | order(trackNumber asc)
   }
 `);
 
@@ -155,4 +161,57 @@ export const GENRE_SLUGS_QUERY = defineQuery(/* groq */ `
   *[_type == "genre" && generatePage == true && defined(slug.current)]{
     "params": { "slug": slug.current }
   }
+`);
+
+export const ALBUMS_QUERY = defineQuery(/* groq */ `
+  *[_type == "album" && generatePage == true && defined(slug.current)]
+    | order(releaseDate desc){
+      _id,
+      title,
+      "slug": slug.current,
+      coverImage,
+      releaseDate,
+      generatePage,
+      artist->{ name }
+    }
+`);
+
+export const SONG_QUERY = defineQuery(/* groq */ `
+  *[_type == "song" && slug.current == $slug][0]{
+    _id,
+    title,
+    "slug": slug.current,
+    trackNumber,
+    duration,
+    review,
+    links,
+    artist->{ _id, name, "slug": slug.current, image, generatePage },
+    album->{
+      _id,
+      title,
+      "slug": slug.current,
+      coverImage,
+      releaseDate,
+      generatePage,
+      artist->{ name }
+    },
+    genres[]->{ _id, name, "slug": slug.current, generatePage }
+  }
+`);
+
+export const SONG_SLUGS_QUERY = defineQuery(/* groq */ `
+  *[_type == "song" && defined(slug.current)]{
+    "params": { "slug": slug.current }
+  }
+`);
+
+export const ARTISTS_QUERY = defineQuery(/* groq */ `
+  *[_type == "artist" && generatePage == true && defined(slug.current)]
+    | order(name asc){
+      _id,
+      name,
+      "slug": slug.current,
+      image,
+      generatePage
+    }
 `);

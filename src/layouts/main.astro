@@ -1,7 +1,8 @@
 ---
 import "../styles/global.css";
 import { sanityClient } from "sanity:client";
-import CmsLink from "../components/CmsLink.astro";
+import Nav from "../components/ui/Nav.astro";
+import { resolveCmsLink } from "../lib/sanity/links";
 import { NAVBAR_QUERY } from "../lib/sanity/queries";
 import type { Navbar } from "../lib/sanity/types";
 
@@ -11,7 +12,10 @@ interface Props {
 
 const { title } = Astro.props;
 const navbar = await sanityClient.fetch<Navbar | null>(NAVBAR_QUERY);
-const items = navbar?.items ?? [];
+
+const items = (navbar?.items ?? [])
+  .map((item) => resolveCmsLink(item))
+  .filter((item) => item !== null);
 ---
 
 <html lang="en">
@@ -23,22 +27,10 @@ const items = navbar?.items ?? [];
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
   </head>
-  <body>
-    {
-      items.length > 0 && (
-        <header class="container mx-auto max-w-3xl p-8 pb-0">
-          <nav>
-            <ul class="flex flex-wrap gap-4">
-              {items.map((item) => (
-                <li>
-                  <CmsLink link={item} class="hover:underline" />
-                </li>
-              ))}
-            </ul>
-          </nav>
-        </header>
-      )
-    }
+  <body class="min-h-screen bg-room text-screen">
+    <div class="mx-auto flex w-full max-w-measure flex-col px-7 pt-10 sm:px-10">
+      <Nav items={items} pathname={Astro.url.pathname} />
+    </div>
     <slot />
   </body>
 </html>

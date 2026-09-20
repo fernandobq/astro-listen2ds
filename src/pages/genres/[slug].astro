@@ -1,5 +1,8 @@
 ---
 import Layout from "../../layouts/main.astro";
+import PageShell from "../../components/ui/PageShell.astro";
+import SectionLabel from "../../components/ui/SectionLabel.astro";
+import Stack from "../../components/ui/Stack.astro";
 import AlbumCard from "../../components/AlbumCard.astro";
 import ArtistCard from "../../components/ArtistCard.astro";
 import { sanityClient } from "sanity:client";
@@ -19,42 +22,33 @@ const genre = await sanityClient.fetch<Genre | null>(GENRE_QUERY, { slug });
 if (!genre) {
   return new Response("Not found", { status: 404, statusText: "Not Found" });
 }
-
-const albums = genre.albums ?? [];
-const artists = genre.artists ?? [];
 ---
 
 <Layout title={genre.name}>
-  <main class="container mx-auto min-h-screen max-w-3xl p-8 flex flex-col gap-4">
-    <h1 class="text-4xl font-bold">{genre.name}</h1>
-    {genre.description && <p>{genre.description}</p>}
-    {
-      artists.length > 0 && (
-        <section class="flex flex-col gap-4 mt-4">
-          <h2 class="text-2xl font-bold">Artists</h2>
-          <ul class="flex flex-col gap-y-4">
-            {artists.map((artist) => (
-              <li>
-                <ArtistCard artist={artist} />
-              </li>
-            ))}
-          </ul>
-        </section>
-      )
-    }
-    {
-      albums.length > 0 && (
-        <section class="flex flex-col gap-4 mt-4">
-          <h2 class="text-2xl font-bold">Albums</h2>
-          <ul class="flex flex-col gap-y-4">
-            {albums.map((album) => (
-              <li>
-                <AlbumCard album={album} />
-              </li>
-            ))}
-          </ul>
-        </section>
-      )
-    }
-  </main>
+  <PageShell class="gap-8 pb-24">
+    <div class="flex flex-col gap-3">
+      <h1 class="text-title-sm text-glow sm:text-title">{genre.name}</h1>
+      {genre.description && (
+        <p class="max-w-[66ch] text-body text-screen">{genre.description}</p>
+      )}
+    </div>
+
+    {genre.albums && genre.albums.length > 0 && (
+      <section class="flex flex-col gap-4">
+        <SectionLabel>Discos</SectionLabel>
+        <Stack>
+          {genre.albums.map((album) => <AlbumCard album={album} />)}
+        </Stack>
+      </section>
+    )}
+
+    {genre.artists && genre.artists.length > 0 && (
+      <section class="flex flex-col gap-4">
+        <SectionLabel>Gente</SectionLabel>
+        <Stack>
+          {genre.artists.map((artist) => <ArtistCard artist={artist} />)}
+        </Stack>
+      </section>
+    )}
+  </PageShell>
 </Layout>

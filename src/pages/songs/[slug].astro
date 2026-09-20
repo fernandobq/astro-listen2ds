@@ -1,0 +1,96 @@
+---
+import Layout from "../../layouts/main.astro";
+import PageShell from "../../components/ui/PageShell.astro";
+import Cover from "../../components/ui/Cover.astro";
+import GenreChips from "../../components/GenreChips.astro";
+import PortableBody from "../../components/PortableBody.astro";
+import ListenLinks from "../../components/ui/ListenLinks.astro";
+import SanityImage from "../../components/SanityImage.astro";
+import { sanityClient } from "sanity:client";
+import { SONG_QUERY, SONG_SLUGS_QUERY } from "../../lib/sanity/queries";
+import type { Song, StaticSlugPath } from "../../lib/sanity/types";
+
+export async function getStaticPaths() {
+  const songs =
+    (await sanityClient.fetch<StaticSlugPath[] | null>(SONG_SLUGS_QUERY)) ??
+    [];
+  return songs;
+}
+
+const { slug } = Astro.params;
+const song = await sanityClient.fetch<Song | null>(SONG_QUERY, { slug });
+
+if (!song) {
+  return new Response("Not found", { status: 404, statusText: "Not Found" });
+}
+
+const artistHref =
+  song.artist?.generatePage && song.artist.slug
+    ? `/artists/${song.artist.slug}`
+    : null;
+const albumHref =
+  song.album?.generatePage && song.album.slug
+    ? `/albums/${song.album.slug}`
+    : null;
+---
+
+<Layout title={song.title}>
+  <PageShell class="gap-8 pb-24">
+    <div class="flex flex-wrap items-start gap-[22px]">
+      {song.album?.coverImage ? (
+        <Cover size={160}>
+          <SanityImage
+            image={song.album.coverImage}
+            alt={song.album.title ?? song.title}
+            width={320}
+            height={320}
+            class="h-full w-full object-cover"
+          />
+        </Cover>
+      ) : (
+        <Cover size={160} />
+      )}
+      <div class="flex min-w-[250px] flex-1 flex-col gap-2">
+        <h1 class="text-title-sm text-glow sm:text-title">{song.title}</h1>
+        {(song.artist?.name || song.album?.title) && (
+          <div class="max-w-[66ch] text-body text-screen">
+            {song.artist?.name && (
+              artistHref ? (
+                <a href={artistHref}>{song.artist.name}</a>
+              ) : (
+                song.artist.name
+              )
+            )}
+            {song.artist?.name && song.album?.title && <> — </>}
+            {song.album?.title && (
+              albumHref ? (
+                <a href={albumHref}>{song.album.title}</a>
+              ) : (
+                song.album.title
+              )
+            )}
+          </div>
+        )}
+        {(song.duration || (song.genres && song.genres.length > 0)) && (
+          <div class="flex flex-wrap items-center gap-x-2 text-meta text-dim">
+            {song.duration && <span>{song.duration}</span>}
+            {song.duration && song.genres && song.genres.length > 0 && (
+              <span>·</span>
+            )}
+            <GenreChips genres={song.genres} />
+          </div>
+        )}
+      </div>
+    </div>
+
+    <PortableBody value={song.review} />
+
+    <ListenLinks links={song.links} />
+
+    {albumHref && (
+      <div class="border-t border-hairline pt-4 text-meta">
+        <a href={albumHref}>Back to the album</a>
+      </div>
+    )}
+  </PageShell>
+</Layout>

@@ -1,4 +1,6 @@
 ---
+import SectionLabel from "../ui/SectionLabel.astro";
+import Stack from "../ui/Stack.astro";
 import PostCard from "../PostCard.astro";
 import type { FeaturedPostsBlock } from "../../lib/sanity/types";
 
@@ -10,17 +12,15 @@ const { block } = Astro.props;
 const posts = block.posts ?? [];
 ---
 
-<section class="flex flex-col gap-4">
-  {block.heading && <h2 class="text-2xl font-bold">{block.heading}</h2>}
-  {
-    posts.length > 0 && (
-      <ul class="flex flex-col gap-y-4">
+{
+  posts.length > 0 && (
+    <section class="flex flex-col gap-4">
+      <SectionLabel>{block.heading ?? "Lately"}</SectionLabel>
+      <Stack>
         {posts.map((post) => (
-          <li>
-            <PostCard post={post} />
-          </li>
+          <PostCard post={post} />
         ))}
-      </ul>
-    )
-  }
-</section>
+      </Stack>
+    </section>
+  )
+}

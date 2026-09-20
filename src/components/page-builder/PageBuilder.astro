@@ -13,21 +13,23 @@ interface Props {
 const { blocks } = Astro.props;
 ---
 
-{
-  blocks?.map((block) => {
-    switch (block._type) {
-      case "hero":
-        return <Hero block={block} />;
-      case "richText":
-        return <RichText block={block} />;
-      case "featuredPosts":
-        return <FeaturedPosts block={block} />;
-      case "featuredAlbums":
-        return <FeaturedAlbums block={block} />;
-      case "featuredArtists":
-        return <FeaturedArtists block={block} />;
-      default:
-        return null;
-    }
-  })
-}
+<div class="flex flex-col gap-16">
+  {
+    blocks?.map((block) => {
+      switch (block._type) {
+        case "hero":
+          return <Hero block={block} />;
+        case "richText":
+          return <RichText block={block} />;
+        case "featuredPosts":
+          return <FeaturedPosts block={block} />;
+        case "featuredAlbums":
+          return <FeaturedAlbums block={block} />;
+        case "featuredArtists":
+          return <FeaturedArtists block={block} />;
+        default:
+          return null;
+      }
+    })
+  }
+</div>

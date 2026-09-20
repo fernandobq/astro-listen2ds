@@ -1,5 +1,9 @@
 ---
 import Layout from "../../layouts/main.astro";
+import PageShell from "../../components/ui/PageShell.astro";
+import Cover from "../../components/ui/Cover.astro";
+import SectionLabel from "../../components/ui/SectionLabel.astro";
+import Stack from "../../components/ui/Stack.astro";
 import AlbumCard from "../../components/AlbumCard.astro";
 import GenreChips from "../../components/GenreChips.astro";
 import PortableBody from "../../components/PortableBody.astro";
@@ -21,47 +25,41 @@ const artist = await sanityClient.fetch<Artist | null>(ARTIST_QUERY, { slug });
 if (!artist) {
   return new Response("Not found", { status: 404, statusText: "Not Found" });
 }
-
-const albums = artist.albums ?? [];
 ---
 
 <Layout title={artist.name}>
-  <main class="container mx-auto min-h-screen max-w-3xl p-8 flex flex-col gap-4">
-    <SanityImage
-      image={artist.image}
-      alt={artist.name}
-      width={550}
-      height={550}
-      class="aspect-square rounded-xl"
-    />
-    <h1 class="text-4xl font-bold">{artist.name}</h1>
-    <GenreChips genres={artist.genres} />
-    {
-      artist.website && (
-        <a
-          href={artist.website}
-          class="underline"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Website
-        </a>
-      )
-    }
+  <PageShell class="gap-8 pb-24">
+    <div class="flex flex-wrap items-start gap-[22px]">
+      {artist.image ? (
+        <Cover shape="circle" size={120}>
+          <SanityImage
+            image={artist.image}
+            alt={artist.name}
+            width={240}
+            height={240}
+            class="h-full w-full object-cover"
+          />
+        </Cover>
+      ) : (
+        <Cover shape="circle" size={120} />
+      )}
+      <div class="flex min-w-[250px] flex-1 flex-col gap-2">
+        <h1 class="text-title-sm text-glow sm:text-title">{artist.name}</h1>
+        <GenreChips genres={artist.genres} />
+      </div>
+    </div>
+
     <PortableBody value={artist.bio} />
-    {
-      albums.length > 0 && (
-        <section class="flex flex-col gap-4 mt-4">
-          <h2 class="text-2xl font-bold">Albums</h2>
-          <ul class="flex flex-col gap-y-4">
-            {albums.map((album) => (
-              <li>
-                <AlbumCard album={album} />
-              </li>
-            ))}
-          </ul>
-        </section>
-      )
-    }
-  </main>
+
+    {artist.albums && artist.albums.length > 0 && (
+      <section class="flex flex-col gap-4">
+        <SectionLabel>Discos</SectionLabel>
+        <Stack>
+          {artist.albums.map((album) => (
+            <AlbumCard album={album} />
+          ))}
+        </Stack>
+      </section>
+    )}
+  </PageShell>
 </Layout>

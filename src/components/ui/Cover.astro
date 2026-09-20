@@ -1,0 +1,28 @@
+---
+interface Props {
+  shape?: "square" | "circle";
+  size: 52 | 120 | 140 | 160 | 200;
+  class?: string;
+}
+
+const { shape = "square", size, class: className } = Astro.props;
+const hasImage = Astro.slots.has("default");
+---
+
+<div
+  class:list={[
+    "flex-none overflow-hidden border border-hairline bg-cover-fallback",
+    shape === "circle" && "rounded-full",
+    !hasImage && "flex items-end p-3.5",
+    className,
+  ]}
+  style={`width:${size}px;height:${size}px;`}
+>
+  {
+    hasImage ? (
+      <slot />
+    ) : (
+      <span class="text-caption leading-snug text-faint">No cover yet</span>
+    )
+  }
+</div>
